@@ -2,11 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chunk : MonoBehaviour {
-    public MeshRenderer meshRenderer;
-    public MeshFilter meshFilter;
+public class Chunk {
+    public ChunkCoord coord;
 
-    public World world;
+
+    GameObject chunkObject;
+
+    MeshRenderer meshRenderer;
+    MeshFilter meshFilter;
+
+    World world;
     
     int vertexIndex = 0;
     List<Vector3> vertices = new List<Vector3>();
@@ -18,13 +23,19 @@ public class Chunk : MonoBehaviour {
     // means that we are going to use the first element of the array World.blockTypes 
     byte[,,] voxelMap = new byte[VoxelData.ChunkWidth, VoxelData.ChunkHeight, VoxelData.ChunkWidth];
 
-    // Start is called before the first frame update
-    void Start() {
+    public Chunk(ChunkCoord _coord, World _world) {
+        coord = _coord;
+        world = _world;
+        chunkObject = new GameObject();
 
-        // Not the most efficient way, but for now this will do fine
-        world = GameObject.Find("World").GetComponent<World>();
+        meshFilter = chunkObject.AddComponent<MeshFilter>();
+        meshRenderer = chunkObject.AddComponent<MeshRenderer>();
+        meshRenderer.material = world.material;
 
-
+        chunkObject.transform.SetParent(world.transform);
+        chunkObject.transform.position = new Vector3(coord.x * VoxelData.ChunkWidth, 0f, coord.z * VoxelData.ChunkWidth);
+        chunkObject.name = "Chunk " + coord.x + ", " + coord.z;
+        
         PopulateVoxelMap();
         CreateMeshData();
         CreateMesh();
@@ -47,12 +58,7 @@ public class Chunk : MonoBehaviour {
             for (int x = 0; x < VoxelData.ChunkWidth; x++) {
                 // ChunkWidth again because the chunks will be square across
                 for (int z = 0; z < VoxelData.ChunkWidth; z++) {
-                    if (y < 1)
-                        voxelMap[x, y, z] = 0;
-                    else if (y == VoxelData.ChunkHeight - 1)
-                        voxelMap[x, y, z] = 2;
-                    else
-                        voxelMap[x, y, z] = 1;
+                    voxelMap[x, y, z] = world.GetVoxel(new Vector3(x, y, z) + position);
                 }
             }
         }
@@ -63,10 +69,17 @@ public class Chunk : MonoBehaviour {
         int y = Mathf.FloorToInt(pos.y);
         int z = Mathf.FloorToInt(pos.z);
 
+        if (!IsVoxelInChunk(x, y, z)) {
+            return world.blockTypes[world.GetVoxel(pos + position)].isSolid;
+        }
+        return world.blockTypes[voxelMap[x, y, z]].isSolid;
+    }
+
+    bool IsVoxelInChunk(int x, int y, int z) {
         // Since we are checking for _adjacent_ voxels in the array, we might end up checking
         // at position -1 or at position 6 in a 6-length (0 based) array, therefore
         // leading to IndexOutRangeExceptions. 
-        // E.g. if we're checking say voxel (0, 0, 0) then voxel to the left of it is going to 
+        // E.g. if we're checking say voxel (0, 0, 0) then the voxel to the left of it is going to 
         // be (-1, 0, 0).
         // We need to prevent that.
         if (
@@ -76,8 +89,18 @@ public class Chunk : MonoBehaviour {
         ) {
             // If the condition is true, then the voxel we are trying to check is outside of the current chunk
             return false;
+        } else {
+            return true;
         }
-        return world.blockTypes[voxelMap[x, y, z]].isSolid;
+    }
+
+    public bool IsActive {
+        get { return chunkObject.activeSelf; }
+        set { chunkObject.SetActive(value); }
+    }
+
+    public Vector3 position {
+        get { return chunkObject.transform.position; }
     }
 
     void AddVoxelDataToChunk(Vector3 pos) {
@@ -148,6 +171,28 @@ public class Chunk : MonoBehaviour {
         uvs.Add(new Vector2(x, y + VoxelData.NormalizedBlockTextureSize));
         uvs.Add(new Vector2(x + VoxelData.NormalizedBlockTextureSize, y));
         uvs.Add(new Vector2(x + VoxelData.NormalizedBlockTextureSize, y + VoxelData.NormalizedBlockTextureSize));
+    }
+
+}
+
+// Chunk position within the Chunk map.
+// Therefore, this isn't the absolute position.
+public class ChunkCoord {
+    public int x;
+    public int z;
+
+    public ChunkCoord(int _x, int _z) {
+        x = _x;
+        z = _z;
+    }
+
+    public bool Equals(ChunkCoord other) {
+        if (other == null)
+            return false;
+        else if (other.x == x && other.z == z)
+            return true;
+        else
+            return false;
     }
 
 }
