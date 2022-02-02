@@ -47,7 +47,8 @@ public class Chunk {
             for (int x = 0; x < VoxelData.ChunkWidth; x++) {
                 // ChunkWidth again because the chunks will be square across
                 for (int z = 0; z < VoxelData.ChunkWidth; z++) {
-                    AddVoxelDataToChunk(new Vector3(x, y, z));
+                    if (world.blockTypes[voxelMap[x, y, z]].isSolid) // only draw a voxel if it's solid
+                        AddVoxelDataToChunk(new Vector3(x, y, z));
                 }
             }
         }
