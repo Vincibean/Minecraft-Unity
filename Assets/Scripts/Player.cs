@@ -107,12 +107,16 @@ public class Player : MonoBehaviour {
     // Therefore, we need to check if any of those 4 voxels is solid and can sustain the player.
     // If the player is in the air, return the same downSpeed and modify isGrounded to be false;
     // otherwise, set isGrounded to true and return 0 (because the player isn't falling anymore).
+    // The (!left && !back) fix a bug where the player can hang onto walls because the checkDownSpeed(float) 
+    // and checkUpSpeed(float) functions are accounting for the 4 possible blocks below it without 
+    // even checking if those 4 blocks would be accessible to the player's feet (like if there is a
+    // block on top of those blocks or not)
     private float checkDownSpeed(float downSpeed) {
         if (
-            world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth) ||
-            world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth) ||
-            world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth) ||
-            world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth)
+            (world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth) && (!left && !back)) ||
+            (world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth) && (!right && !back)) ||
+            (world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth) && (!right && !front)) ||
+            (world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth) && (!left && !front))
         ) {
             isGrounded = true;
             return 0;
@@ -126,10 +130,10 @@ public class Player : MonoBehaviour {
     // "+ 2f" because we are taking into account the player height (the collision detection is a little bit above the head) 
     private float checkUpSpeed(float upSpeed) {
         if (
-            world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + 2f + upSpeed, transform.position.z - playerWidth) ||
-            world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + 2f + upSpeed, transform.position.z - playerWidth) ||
-            world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + 2f + upSpeed, transform.position.z + playerWidth) ||
-            world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + 2f + upSpeed, transform.position.z + playerWidth)
+            (world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + 2f + upSpeed, transform.position.z - playerWidth) && (!left && !back)) ||
+            (world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + 2f + upSpeed, transform.position.z - playerWidth) && (!right && !back)) ||
+            (world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + 2f + upSpeed, transform.position.z + playerWidth) && (!right && !front)) ||
+            (world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + 2f + upSpeed, transform.position.z + playerWidth) && (!left && !front))
         ) {
             return 0;
         } else {
