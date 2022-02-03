@@ -56,14 +56,14 @@ public class Player : MonoBehaviour {
         // If we're sprinting, use the sprint multiplier
         if (isSprinting)
             velocity = 
-                ((transform.forward * vertical) +  // "vertical" here means "forward/backward"
-                (transform.right * horizontal)) * 
-                Time.deltaTime * sprintSpeed;
+                ((transform.forward * vertical) +              // "vertical" here means "forward/backward"
+                (transform.right * horizontal)).normalized *   // Add .normalized to your movement so that you don't move faster diagonally
+                Time.fixedDeltaTime  * sprintSpeed;
         else
             velocity = 
                 ((transform.forward * vertical) +
-                (transform.right * horizontal)) * 
-                Time.deltaTime * walkSpeed;
+                (transform.right * horizontal)).normalized * 
+                Time.fixedDeltaTime  * walkSpeed;
 
         // Apply vertical momentum (falling/jumping)
         velocity += Vector3.up * verticalMomentum * Time.fixedDeltaTime;
