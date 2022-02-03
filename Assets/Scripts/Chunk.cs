@@ -21,7 +21,7 @@ public class Chunk {
     // Apply the material defined in World.blockTypes; in other words, 
     // voxelMap[x, y, z] = 0;
     // means that we are going to use the first element of the array World.blockTypes 
-    byte[,,] voxelMap = new byte[VoxelData.ChunkWidth, VoxelData.ChunkHeight, VoxelData.ChunkWidth];
+    public byte[,,] voxelMap = new byte[VoxelData.ChunkWidth, VoxelData.ChunkHeight, VoxelData.ChunkWidth];
 
     public Chunk(ChunkCoord _coord, World _world) {
         coord = _coord;

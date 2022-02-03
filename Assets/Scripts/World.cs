@@ -21,15 +21,16 @@ public class World : MonoBehaviour {
 
     private void Start() {
         Random.InitState(seed);
-        spawnPosition = new Vector3((VoxelData.WorldSizeInChunks * VoxelData.ChunkWidth) / 2f, VoxelData.ChunkHeight + 2f, (VoxelData.WorldSizeInChunks * VoxelData.ChunkWidth) / 2f);
+        spawnPosition = new Vector3((VoxelData.WorldSizeInChunks * VoxelData.ChunkWidth) / 2f, VoxelData.ChunkHeight - 50f, (VoxelData.WorldSizeInChunks * VoxelData.ChunkWidth) / 2f);
         GenerateWorld();
         playerLastChunkCoord = GetChunkCoordFromVector3(player.position);
     }
 
     private void Update() {
         playerChunkCoord = GetChunkCoordFromVector3(player.position);
-        if (!playerChunkCoord.Equals(playerLastChunkCoord))
-            CheckViewDistance();
+        // Only update the chunks if the player has moved from the chunk they are previously on
+        // if (!playerChunkCoord.Equals(playerLastChunkCoord))
+        //     CheckViewDistance();
     }
 
     void GenerateWorld() {
@@ -73,6 +74,25 @@ public class World : MonoBehaviour {
         int x = Mathf.FloorToInt(pos.x / VoxelData.ChunkWidth);
         int z = Mathf.FloorToInt(pos.z / VoxelData.ChunkWidth);
         return new ChunkCoord(x, z);
+    }
+
+    public bool CheckForVoxel(float _x, float _y, float _z) {
+        // Get the bottom left back corner of whatever voxel we're on
+
+        // Global values of the voxel
+        int xCheck = Mathf.FloorToInt(_x);
+        int yCheck = Mathf.FloorToInt(_y);
+        int zCheck = Mathf.FloorToInt(_z);
+
+        // Chunk values in X and Z coordinates
+        int xChunk = xCheck / VoxelData.ChunkWidth;
+        int zChunk = zCheck / VoxelData.ChunkWidth;
+
+        // X and Z values within the chunk
+        xCheck -= (xChunk * VoxelData.ChunkWidth);
+        zCheck -= (zChunk * VoxelData.ChunkWidth);
+
+        return blockTypes[chunks[xChunk, zChunk].voxelMap[xCheck, yCheck, zCheck]].isSolid;
     }
 
     public byte GetVoxel(Vector3 pos) {
