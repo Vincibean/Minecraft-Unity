@@ -5,7 +5,6 @@ using UnityEngine;
 public class Chunk {
     public ChunkCoord coord;
 
-
     GameObject chunkObject;
 
     MeshRenderer meshRenderer;
@@ -22,10 +21,19 @@ public class Chunk {
     // voxelMap[x, y, z] = 0;
     // means that we are going to use the first element of the array World.blockTypes 
     public byte[,,] voxelMap = new byte[VoxelData.ChunkWidth, VoxelData.ChunkHeight, VoxelData.ChunkWidth];
+    public bool isVoxelMapPopulated = false;
 
-    public Chunk(ChunkCoord _coord, World _world) {
+    private bool _isActive;
+
+    public Chunk(ChunkCoord _coord, World _world, bool generateOnLoad) {
         coord = _coord;
         world = _world;
+        IsActive = true;
+        if(generateOnLoad)
+            Init();
+    }
+
+    public void Init() {
         chunkObject = new GameObject();
 
         meshFilter = chunkObject.AddComponent<MeshFilter>();
@@ -63,6 +71,21 @@ public class Chunk {
                 }
             }
         }
+        isVoxelMapPopulated = true;
+    }
+
+    public byte GetVoxelFromGlobalVector3(Vector3 pos) {
+        int xCheck = Mathf.FloorToInt(pos.x);
+        int yCheck = Mathf.FloorToInt(pos.y);
+        int zCheck = Mathf.FloorToInt(pos.z);
+
+        // Takes the current xCheck value (which represents the current x position of this voxel
+        // in world space) and it is removing the chunk's absolute position. 
+        // This gives the position of the voxel withing this chunk. 
+        xCheck -= Mathf.FloorToInt(chunkObject.transform.position.x);
+        zCheck -= Mathf.FloorToInt(chunkObject.transform.position.z);
+
+        return voxelMap[xCheck, yCheck, zCheck];
     }
 
     bool CheckVoxel(Vector3 pos) {
@@ -71,7 +94,8 @@ public class Chunk {
         int z = Mathf.FloorToInt(pos.z);
 
         if (!IsVoxelInChunk(x, y, z)) {
-            return world.blockTypes[world.GetVoxel(pos + position)].isSolid;
+            Vector3 globalPosition = pos + position;
+            return world.CheckForVoxel(globalPosition);
         }
         return world.blockTypes[voxelMap[x, y, z]].isSolid;
     }
@@ -96,8 +120,12 @@ public class Chunk {
     }
 
     public bool IsActive {
-        get { return chunkObject.activeSelf; }
-        set { chunkObject.SetActive(value); }
+        get { return _isActive; }
+        set {
+            _isActive = value;
+            if (chunkObject != null)
+                chunkObject.SetActive(value);
+        }
     }
 
     public Vector3 position {
@@ -182,7 +210,24 @@ public class ChunkCoord {
     public int x;
     public int z;
 
+    public ChunkCoord(): this(0,0) { }
+
     public ChunkCoord(int _x, int _z) {
+        x = _x;
+        z = _z;
+    }
+
+    public ChunkCoord(Vector3 pos) {
+        // Get the bottom left back corner of whatever voxel we're on
+
+        // Global values of the voxel
+        int xCheck = Mathf.FloorToInt(pos.x);
+        int zCheck = Mathf.FloorToInt(pos.z);
+
+        // Chunk values in X and Z coordinates
+        int _x = xCheck / VoxelData.ChunkWidth;
+        int _z = zCheck / VoxelData.ChunkWidth;
+
         x = _x;
         z = _z;
     }
