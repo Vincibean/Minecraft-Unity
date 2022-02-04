@@ -33,7 +33,7 @@ public class DebugScreen : MonoBehaviour {
         debugText += "XYZ: " + 
             (Mathf.FloorToInt(world.player.transform.position.x) - halfWorldSizeInVoxels) + " / " +
             Mathf.FloorToInt(world.player.transform.position.y) + " / " +
-            (Mathf.FloorToInt(world.player.transform.position.z) - halfWorldSizeInVoxels) + " / ";
+            (Mathf.FloorToInt(world.player.transform.position.z) - halfWorldSizeInVoxels);
         debugText += "\n";
         debugText += "Chunk: " + 
             (world.playerChunkCoord.x - halfWorldSizeInChunks) + " / " +

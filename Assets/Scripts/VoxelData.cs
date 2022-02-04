@@ -5,7 +5,7 @@ public static class VoxelData {
 
     public static readonly int ChunkWidth = 16; // Actual Minecraft value
     public static readonly int ChunkHeight = 128; // Actual Minecraft value
-    public static readonly int WorldSizeInChunks = 10;
+    public static readonly int WorldSizeInChunks = 100;
 
     public static int WorldSizeInVoxels {
         get { return WorldSizeInChunks * ChunkWidth; }
@@ -17,7 +17,7 @@ public static class VoxelData {
     public static readonly int TextureAtlasSizeInBlocks = 4;
 
     public static float NormalizedBlockTextureSize {
-        get { return  1f / TextureAtlasSizeInBlocks; }
+        get { return  1f / (float)TextureAtlasSizeInBlocks; }
     }
 
     // All the vertices of a given voxel

@@ -47,8 +47,8 @@ public class World : MonoBehaviour {
     }
 
     void GenerateWorld() {
-        for (int x = (VoxelData.WorldSizeInChunks / 2) - VoxelData.ViewDistanceInChunks; x < (VoxelData.WorldSizeInChunks / 2) + VoxelData.ViewDistanceInChunks; x++){
-            for (int z = (VoxelData.WorldSizeInChunks / 2) - VoxelData.ViewDistanceInChunks; z < (VoxelData.WorldSizeInChunks / 2) + VoxelData.ViewDistanceInChunks; z++){
+        for (int x = (VoxelData.WorldSizeInChunks / 2) - VoxelData.ViewDistanceInChunks; x < (VoxelData.WorldSizeInChunks / 2) + VoxelData.ViewDistanceInChunks; x++) {
+            for (int z = (VoxelData.WorldSizeInChunks / 2) - VoxelData.ViewDistanceInChunks; z < (VoxelData.WorldSizeInChunks / 2) + VoxelData.ViewDistanceInChunks; z++) {
                 ChunkCoord coord = new ChunkCoord(x, z);
                 chunks[x, z] = new Chunk(coord, this, true); // We want this generated before the player even enters the world, so Chunk's generateOnLoad = true
                 activeChunks.Add(coord);
@@ -82,8 +82,8 @@ public class World : MonoBehaviour {
                     if (chunks[x, z] == null) {
                         chunks[x, z] = new Chunk(new ChunkCoord(x, z), this, false);
                         chunksToCreate.Add(new ChunkCoord(x, z));
-                    } else if (!chunks[x, z].IsActive) {
-                        chunks[x, z].IsActive = true;
+                    } else if (!chunks[x, z].isActive) {
+                        chunks[x, z].isActive = true;
                     }
                     activeChunks.Add(new ChunkCoord(x, z));
                 }
@@ -99,7 +99,7 @@ public class World : MonoBehaviour {
         }
         // Deactivate the chunks that are no longer in the view distance.
         foreach(ChunkCoord c in previouslyActiveChunks)
-            chunks[c.x, c.z].IsActive = false;
+            chunks[c.x, c.z].isActive = false;
     }
 
     ChunkCoord GetChunkCoordFromVector3(Vector3 pos) {

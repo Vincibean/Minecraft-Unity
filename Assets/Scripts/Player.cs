@@ -22,7 +22,7 @@ public class Player : MonoBehaviour {
     private float mouseHorizontal;
     private float mouseVertical;
     private Vector3 velocity;
-    private float verticalMomentum;
+    private float verticalMomentum = 0;
     private bool jumpRequest;
 
     private void Start() {
@@ -69,16 +69,15 @@ public class Player : MonoBehaviour {
         velocity += Vector3.up * verticalMomentum * Time.fixedDeltaTime;
 
         // if there's even a slight drift in the z axis (back and forward) and there's something in the way
-        if ((velocity.z > 0 && front) || (velocity.z > 0 && back))
+        if ((velocity.z > 0 && front) || (velocity.z < 0 && back))
             velocity.z = 0;
-        if ((velocity.x > 0 && right) || (velocity.x > 0 && left))
+        if ((velocity.x > 0 && right) || (velocity.x < 0 && left))
             velocity.x = 0;
 
         if (velocity.y < 0)
             velocity.y = checkDownSpeed(velocity.y);
         else if (velocity.y > 0)
             velocity.y = checkUpSpeed(velocity.y);
-
     }
 
     private void GetPlayerInputs() {

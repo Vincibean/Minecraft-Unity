@@ -28,7 +28,7 @@ public class Chunk {
     public Chunk(ChunkCoord _coord, World _world, bool generateOnLoad) {
         coord = _coord;
         world = _world;
-        IsActive = true;
+        isActive = true;
         if(generateOnLoad)
             Init();
     }
@@ -119,7 +119,7 @@ public class Chunk {
         }
     }
 
-    public bool IsActive {
+    public bool isActive {
         get { return _isActive; }
         set {
             _isActive = value;
@@ -225,11 +225,8 @@ public class ChunkCoord {
         int zCheck = Mathf.FloorToInt(pos.z);
 
         // Chunk values in X and Z coordinates
-        int _x = xCheck / VoxelData.ChunkWidth;
-        int _z = zCheck / VoxelData.ChunkWidth;
-
-        x = _x;
-        z = _z;
+        x = xCheck / VoxelData.ChunkWidth;
+        z = zCheck / VoxelData.ChunkWidth;
     }
 
     public bool Equals(ChunkCoord other) {
