@@ -45,21 +45,31 @@ public class Chunk {
         chunkObject.name = "Chunk " + coord.x + ", " + coord.z;
         
         PopulateVoxelMap();
-        CreateMeshData();
-        CreateMesh();
+        UpdateChunk();
     }
 
-    void CreateMeshData() {
+    void UpdateChunk() {
+        ClearMeshData();
+
         // Kind of layering the chunks from bottom to top
         for (int y = 0; y < VoxelData.ChunkHeight; y++) {
             for (int x = 0; x < VoxelData.ChunkWidth; x++) {
                 // ChunkWidth again because the chunks will be square across
                 for (int z = 0; z < VoxelData.ChunkWidth; z++) {
                     if (world.blockTypes[voxelMap[x, y, z]].isSolid) // only draw a voxel if it's solid
-                        AddVoxelDataToChunk(new Vector3(x, y, z));
+                        UpdateMeshData(new Vector3(x, y, z));
                 }
             }
         }
+        
+        CreateMesh();
+    }
+
+    void ClearMeshData() {
+        vertexIndex = 0;
+        vertices.Clear();
+        triangles.Clear();
+        uvs.Clear();
     }
 
     void PopulateVoxelMap(){
@@ -119,6 +129,36 @@ public class Chunk {
         }
     }
 
+    public void EditVoxel (Vector3 pos, byte newID) {
+        int xCheck = Mathf.FloorToInt(pos.x);
+        int yCheck = Mathf.FloorToInt(pos.y);
+        int zCheck = Mathf.FloorToInt(pos.z);
+
+        // Takes the current xCheck value (which represents the current x position of this voxel
+        // in world space) and it is removing the chunk's absolute position. 
+        // This gives the position of the voxel withing this chunk. 
+        xCheck -= Mathf.FloorToInt(chunkObject.transform.position.x);
+        zCheck -= Mathf.FloorToInt(chunkObject.transform.position.z);
+
+        voxelMap[xCheck, yCheck, zCheck] = newID;
+
+        UpdateSurroundingVoxels(xCheck, yCheck, zCheck);
+
+        UpdateChunk();
+    }
+
+    void UpdateSurroundingVoxels(int x, int y, int z) {
+        Vector3 thisVoxel = new Vector3(x, y, z);
+        for (int p = 0; p < 6; p++) {
+            Vector3 currentVoxel = thisVoxel + VoxelData.faceChecks[p];
+
+            if (!IsVoxelInChunk((int)currentVoxel.x, (int)currentVoxel.y, (int)currentVoxel.z)) {
+                world.GetChunkFromVector3(currentVoxel + position).UpdateChunk();
+            }
+
+        }
+    }
+
     public bool isActive {
         get { return _isActive; }
         set {
@@ -132,7 +172,7 @@ public class Chunk {
         get { return chunkObject.transform.position; }
     }
 
-    void AddVoxelDataToChunk(Vector3 pos) {
+    void UpdateMeshData(Vector3 pos) {
         for(int p = 0; p < 6; p++){
             if (!CheckVoxel(pos + VoxelData.faceChecks[p])) {
 
