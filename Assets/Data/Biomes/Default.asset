@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3158c1545e42d5b47808ea3c89a174de, type: 3}
+  m_Script: {fileID: 11500000, guid: 604863bef2f81714b90b56811bb2841f, type: 3}
   m_Name: Default
   m_EditorClassIdentifier: 
   biomeName: Default

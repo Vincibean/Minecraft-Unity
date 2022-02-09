@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,17 +14,26 @@ public class Toolbar : MonoBehaviour {
     int slotIndex = 0;
 
     private void Start() {
+
         world = GameObject.Find("World").GetComponent<World>();
 
         foreach (ItemSlot slot in itemSlots) {
-            slot.icon.sprite = world.blockTypes[slot.itemID].icon;
-            slot.icon.enabled= true;
+
+            slot.icon.sprite = world.blocktypes[slot.itemID].icon;
+            slot.icon.enabled = true;
+
         }
+
+        player.selectedBlockIndex = itemSlots[slotIndex].itemID;
+
     }
 
     private void Update() {
+
         float scroll = Input.GetAxis("Mouse ScrollWheel");
+
         if (scroll != 0) {
+
             if (scroll > 0)
                 slotIndex--;
             else
@@ -37,13 +46,19 @@ public class Toolbar : MonoBehaviour {
 
             highlight.position = itemSlots[slotIndex].icon.transform.position;
             player.selectedBlockIndex = itemSlots[slotIndex].itemID;
+
         }
+            
+
     }
+
 
 }
 
 [System.Serializable]
 public class ItemSlot {
+
     public byte itemID;
     public Image icon;
+
 }

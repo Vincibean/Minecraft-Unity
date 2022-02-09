@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,10 +7,7 @@ public class BiomeAttributes : ScriptableObject {
 
     public string biomeName;
 
-    // Below this value, we're going to assume it's always solid ground to start with
     public int solidGroundHeight;
-
-    // height of the terrain from the solidGroundHeight to the highest point that you want your terrain to go
     public int terrainHeight;
     public float terrainScale;
 
@@ -19,7 +16,8 @@ public class BiomeAttributes : ScriptableObject {
 }
 
 [System.Serializable]
-public class Lode { // Ore
+public class Lode {
+
     public string nodeName;
     public byte blockID;
     public int minHeight;
@@ -27,4 +25,6 @@ public class Lode { // Ore
     public float scale;
     public float threshold;
     public float noiseOffset;
+
+
 }
