@@ -23,10 +23,11 @@ public class World : MonoBehaviour {
 
     List<ChunkCoord> chunksToCreate = new List<ChunkCoord>();
     List<Chunk> chunksToUpdate = new List<Chunk>();
+    public Queue<Chunk> chunksToDraw = new Queue<Chunk>();
 
     bool applyingModifications = false;
 
-    Queue<VoxelMod> modifications = new Queue<VoxelMod>();
+    Queue<Queue<VoxelMod>> modifications = new Queue<Queue<VoxelMod>>();
 
     public GameObject debugScreen;
 
@@ -49,10 +50,8 @@ public class World : MonoBehaviour {
         if (!playerChunkCoord.Equals(playerLastChunkCoord))
             CheckViewDistance();
 
-        // if (chunksToCreate.Count > 0 && !isCreatingChunks)
-        //     StartCoroutine("CreateChunks");
-        if (modifications.Count > 0 && !applyingModifications)
-            StartCoroutine("ApplyModifications");
+        if (!applyingModifications)
+            ApplyModifications();
 
         if (chunksToCreate.Count > 0)
             CreateChunk();
@@ -60,14 +59,17 @@ public class World : MonoBehaviour {
         if (chunksToUpdate.Count > 0)
             UpdateChunks();
 
+        if (chunksToDraw.Count > 0)
+            lock (chunksToDraw) {
+                if (chunksToDraw.Peek().isEditable)
+                    chunksToDraw.Dequeue().CreateMesh();
+            }
+
         if (Input.GetKeyDown(KeyCode.F3))
             debugScreen.SetActive(!debugScreen.activeSelf);
-
-
     }
 
     void GenerateWorld () {
-
         for (int x = (VoxelData.WorldSizeInChunks / 2) - VoxelData.ViewDistanceInChunks; x < (VoxelData.WorldSizeInChunks / 2) + VoxelData.ViewDistanceInChunks; x++) {
             for (int z = (VoxelData.WorldSizeInChunks / 2) - VoxelData.ViewDistanceInChunks; z < (VoxelData.WorldSizeInChunks / 2) + VoxelData.ViewDistanceInChunks; z++) {
 
@@ -76,31 +78,7 @@ public class World : MonoBehaviour {
 
             }
         }
-
-        while (modifications.Count > 0) {
-            VoxelMod v = modifications.Dequeue();
-            ChunkCoord c = GetChunkCoordFromVector3(v.position);
-
-            if (chunks[c.x, c.z] == null) {
-                chunks[c.x, c.z] = new Chunk(c, this, true);
-                activeChunks.Add(c);
-            }
-
-            chunks[c.x, c.z].modifications.Enqueue(v);
-
-            // Ensure we update the chunk once
-            if (!chunksToUpdate.Contains(chunks[c.x, c.z]))
-                chunksToUpdate.Add(chunks[c.x, c.z]);
-            
-        }
-
-        for (int i = 0; i < chunksToUpdate.Count; i++) {
-            chunksToUpdate[0].UpdateChunk();
-            chunksToUpdate.RemoveAt(0);
-        }
-
         player.position = spawnPosition;
-
     }
 
     void CreateChunk() {
@@ -114,7 +92,7 @@ public class World : MonoBehaviour {
         bool updated = false;
         int index = 0;
         while (!updated && index < chunksToUpdate.Count - 1) {
-            if (chunksToUpdate[index].isVoxelMapPopulated) {
+            if (chunksToUpdate[index].isEditable) {
                 chunksToUpdate[index].UpdateChunk();
                 chunksToUpdate.RemoveAt(index);
                 updated = true;
@@ -123,29 +101,26 @@ public class World : MonoBehaviour {
         }
     }
 
-    IEnumerator ApplyModifications () {
+    void  ApplyModifications () {
         applyingModifications = true;
-        int count = 0;
 
         while (modifications.Count > 0) {
-            VoxelMod v = modifications.Dequeue();
-            ChunkCoord c = GetChunkCoordFromVector3(v.position);
+            Queue<VoxelMod> queue = modifications.Dequeue();
 
-            if (chunks[c.x, c.z] == null) {
-                chunks[c.x, c.z] = new Chunk(c, this, true);
-                activeChunks.Add(c);
-            }
+            while (queue.Count > 0) {
+                VoxelMod v = queue.Dequeue();
+                ChunkCoord c = GetChunkCoordFromVector3(v.position);
 
-            chunks[c.x, c.z].modifications.Enqueue(v);
+                if (chunks[c.x, c.z] == null) {
+                    chunks[c.x, c.z] = new Chunk(c, this, true);
+                    activeChunks.Add(c);
+                }
 
-            // Ensure we update the chunk once
-            if (!chunksToUpdate.Contains(chunks[c.x, c.z]))
-                chunksToUpdate.Add(chunks[c.x, c.z]);
+                chunks[c.x, c.z].modifications.Enqueue(v);
 
-            count++;
-            if (count > 200) {
-                count = 0;
-                yield return null;
+                // Ensure we update the chunk once
+                if (!chunksToUpdate.Contains(chunks[c.x, c.z]))
+                    chunksToUpdate.Add(chunks[c.x, c.z]);
             }
         }
         applyingModifications = false;
@@ -215,7 +190,7 @@ public class World : MonoBehaviour {
         if (!IsChunkInWorld(thisChunk) || pos.y < 0 || pos.y > VoxelData.ChunkHeight)
             return false;
 
-        if (chunks[thisChunk.x, thisChunk.z] != null && chunks[thisChunk.x, thisChunk.z].isVoxelMapPopulated)
+        if (chunks[thisChunk.x, thisChunk.z] != null && chunks[thisChunk.x, thisChunk.z].isEditable)
             return blocktypes[chunks[thisChunk.x, thisChunk.z].GetVoxelFromGlobalVector3(pos)].isSolid;
 
         return blocktypes[GetVoxel(pos)].isSolid;
@@ -229,7 +204,7 @@ public class World : MonoBehaviour {
         if (!IsChunkInWorld(thisChunk) || pos.y < 0 || pos.y > VoxelData.ChunkHeight)
             return false;
 
-        if (chunks[thisChunk.x, thisChunk.z] != null && chunks[thisChunk.x, thisChunk.z].isVoxelMapPopulated)
+        if (chunks[thisChunk.x, thisChunk.z] != null && chunks[thisChunk.x, thisChunk.z].isEditable)
             return blocktypes[chunks[thisChunk.x, thisChunk.z].GetVoxelFromGlobalVector3(pos)].isTransparent;
 
         return blocktypes[GetVoxel(pos)].isTransparent;
@@ -284,7 +259,7 @@ public class World : MonoBehaviour {
         if (yPos == terrainHeight) {
             if (Noise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, biome.treeZoneScale) > biome.treeZoneThreshold) {
                 if (Noise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, biome.treePlacementScale) > biome.treePlacementThreshold) {
-                    Structure.MakeTree(pos, modifications, biome.minTreeSizeHeight, biome.maxTreeSizeHeight);
+                    modifications.Enqueue(Structure.MakeTree(pos, biome.minTreeSizeHeight, biome.maxTreeSizeHeight));
                 }
             }
         }
