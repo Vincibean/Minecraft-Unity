@@ -5,60 +5,34 @@ using UnityEngine.UI;
 
 public class Toolbar : MonoBehaviour {
 
-    World world;
+    public UIItemSlot[] slots;
     public Player player;
-
     public RectTransform highlight;
-    public ItemSlot[] itemSlots;
-
-    int slotIndex = 0;
+    public int slotIndex = 0;
 
     private void Start() {
-
-        world = GameObject.Find("World").GetComponent<World>();
-
-        foreach (ItemSlot slot in itemSlots) {
-
-            slot.icon.sprite = world.blocktypes[slot.itemID].icon;
-            slot.icon.enabled = true;
-
+        byte index = 1;
+        foreach (UIItemSlot s in slots) {
+            ItemStack stack = new ItemStack(index++, Random.Range(2, 65));
+            ItemSlot slot = new ItemSlot(s, stack);
         }
-
-        player.selectedBlockIndex = itemSlots[slotIndex].itemID;
-
     }
 
     private void Update() {
-
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-
         if (scroll != 0) {
-
             if (scroll > 0)
                 slotIndex--;
             else
                 slotIndex++;
 
-            if (slotIndex > itemSlots.Length - 1)
+            if (slotIndex > slots.Length - 1)
                 slotIndex = 0;
             if (slotIndex < 0)
-                slotIndex = itemSlots.Length - 1;
+                slotIndex = slots.Length - 1;
 
-            highlight.position = itemSlots[slotIndex].icon.transform.position;
-            player.selectedBlockIndex = itemSlots[slotIndex].itemID;
-
+            highlight.position = slots[slotIndex].slotIcon.transform.position;
         }
-            
-
     }
-
-
-}
-
-[System.Serializable]
-public class ItemSlot {
-
-    public byte itemID;
-    public Image icon;
 
 }
