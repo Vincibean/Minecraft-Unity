@@ -68,17 +68,20 @@ public class World : MonoBehaviour {
             ChunkUpdateThread.Start();
         }
 
+        SetGlobalLightValue();
         spawnPosition = new Vector3((VoxelData.WorldSizeInChunks * VoxelData.ChunkWidth) / 2f, VoxelData.ChunkHeight - 50f, (VoxelData.WorldSizeInChunks * VoxelData.ChunkWidth) / 2f);
         GenerateWorld();
         playerLastChunkCoord = GetChunkCoordFromVector3(player.position);
     }
 
+    public void SetGlobalLightValue() {
+        Shader.SetGlobalFloat("GlobalLightLevel", globalLightLevel);
+        Camera.main.backgroundColor = Color.Lerp(night, day, globalLightLevel);
+    }
+
     private void Update() {
 
         playerChunkCoord = GetChunkCoordFromVector3(player.position);
-
-        Shader.SetGlobalFloat("GlobalLightLevel", globalLightLevel);
-        Camera.main.backgroundColor = Color.Lerp(night, day, globalLightLevel);
 
         // Only update the chunks if the player has moved from the chunk they were previously on.
         if (!playerChunkCoord.Equals(playerLastChunkCoord))
@@ -133,7 +136,9 @@ public class World : MonoBehaviour {
             while (!updated && index < chunksToUpdate.Count - 1) {
                 if (chunksToUpdate[index].isEditable) {
                     chunksToUpdate[index].UpdateChunk();
-                    activeChunks.Add(chunksToUpdate[index].coord);
+                    if (!activeChunks.Contains(chunksToUpdate[index].coord)) {
+                        activeChunks.Add(chunksToUpdate[index].coord);
+                    }
                     chunksToUpdate.RemoveAt(index);
                     updated = true;
                 } else
@@ -209,17 +214,19 @@ public class World : MonoBehaviour {
         for (int x = coord.x - settings.ViewDistanceInChunks; x < coord.x + settings.ViewDistanceInChunks; x++) {
             for (int z = coord.z - settings.ViewDistanceInChunks; z < coord.z + settings.ViewDistanceInChunks; z++) {
 
+                ChunkCoord thisChunkCoord = new ChunkCoord(x, z);
+
                 // If the current chunk is in the world...
-                if (IsChunkInWorld (new ChunkCoord (x, z))) {
+                if (IsChunkInWorld (thisChunkCoord)) {
 
                     // Check if it active, if not, activate it.
                     if (chunks[x, z] == null) {
-                        chunks[x, z] = new Chunk(new ChunkCoord(x, z), this);
-                        chunksToCreate.Add(new ChunkCoord(x, z));
+                        chunks[x, z] = new Chunk(thisChunkCoord, this);
+                        chunksToCreate.Add(thisChunkCoord);
                     }  else if (!chunks[x, z].isActive) {
                         chunks[x, z].isActive = true;
                     }
-                    activeChunks.Add(new ChunkCoord(x, z));
+                    activeChunks.Add(thisChunkCoord);
                 }
 
                 // Check through previously active chunks to see if this chunk is there. If it is, remove it from the list.
@@ -273,10 +280,12 @@ public class World : MonoBehaviour {
             _inUI = value;
             if (_inUI) {
                 Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
                 creativeInventoryWindow.SetActive(true);
                 cursorSlot.SetActive(true);
             } else {
                 Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
                 creativeInventoryWindow.SetActive(false);
                 cursorSlot.SetActive(false);
             }
