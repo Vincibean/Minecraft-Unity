@@ -109,8 +109,8 @@ public class World : MonoBehaviour {
     }
 
     void GenerateWorld () {
-        for (int x = (VoxelData.WorldSizeInChunks / 2) - settings.ViewDistanceInChunks; x < (VoxelData.WorldSizeInChunks / 2) + settings.ViewDistanceInChunks; x++) {
-            for (int z = (VoxelData.WorldSizeInChunks / 2) - settings.ViewDistanceInChunks; z < (VoxelData.WorldSizeInChunks / 2) + settings.ViewDistanceInChunks; z++) {
+        for (int x = (VoxelData.WorldSizeInChunks / 2) - settings.ViewDistance; x < (VoxelData.WorldSizeInChunks / 2) + settings.ViewDistance; x++) {
+            for (int z = (VoxelData.WorldSizeInChunks / 2) - settings.ViewDistance; z < (VoxelData.WorldSizeInChunks / 2) + settings.ViewDistance; z++) {
 
                 ChunkCoord newChunkCoord = new ChunkCoord(x, z);
                 chunks[x, z] = new Chunk(newChunkCoord, this);
@@ -211,8 +211,8 @@ public class World : MonoBehaviour {
         activeChunks.Clear();
 
         // Loop through all chunks currently within view distance of the player.
-        for (int x = coord.x - settings.ViewDistanceInChunks; x < coord.x + settings.ViewDistanceInChunks; x++) {
-            for (int z = coord.z - settings.ViewDistanceInChunks; z < coord.z + settings.ViewDistanceInChunks; z++) {
+        for (int x = coord.x - settings.ViewDistance; x < coord.x + settings.ViewDistance; x++) {
+            for (int z = coord.z - settings.ViewDistance; z < coord.z + settings.ViewDistance; z++) {
 
                 ChunkCoord thisChunkCoord = new ChunkCoord(x, z);
 
@@ -232,7 +232,7 @@ public class World : MonoBehaviour {
                 // Check through previously active chunks to see if this chunk is there. If it is, remove it from the list.
                 for (int i = 0; i < previouslyActiveChunks.Count; i++) {
 
-                    if (previouslyActiveChunks[i].Equals(new ChunkCoord(x, z)))
+                    if (previouslyActiveChunks[i].Equals(thisChunkCoord))
                         previouslyActiveChunks.RemoveAt(i);
                        
                 }
@@ -471,7 +471,7 @@ public class Settings {
     public string version;
 
     [Header("Performance")]
-    public int ViewDistanceInChunks = 5;
+    public int ViewDistance = 5;
     public bool enableThreading;
     public bool enableAnimatedChunks;
 
