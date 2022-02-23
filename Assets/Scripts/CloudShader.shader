@@ -13,7 +13,13 @@ Shader "Minecraft/CloudShader" {
 		Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass {
-			Color[_Color]
+			Stencil {
+                Ref 1
+                Comp Greater
+                Pass IncrSat
+            }
+
+            Color[_Color]
 		}
 	}
 }
