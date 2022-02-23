@@ -51,14 +51,12 @@ public class World : MonoBehaviour {
 
     private void Start() {
 
-        // string jsonExport = JsonUtility.ToJson(settings);
-        // Debug.Log(jsonExport);
-        // File.WriteAllText(Application.dataPath + "/settings.cfg", jsonExport);
+        Debug.Log("Generating new world using seed " + VoxelData.seed);
 
         string jsonImport = File.ReadAllText(Application.dataPath + "/settings.cfg");
         settings = JsonUtility.FromJson<Settings>(jsonImport);
 
-        Random.InitState(settings.seed);
+        Random.InitState(VoxelData.seed);
 
         Shader.SetGlobalFloat("minGlobalLightLevel", VoxelData.minLightLevel);
         Shader.SetGlobalFloat("maxGlobalLightLevel", VoxelData.maxLightLevel);
@@ -109,8 +107,8 @@ public class World : MonoBehaviour {
     }
 
     void GenerateWorld () {
-        for (int x = (VoxelData.WorldSizeInChunks / 2) - settings.ViewDistance; x < (VoxelData.WorldSizeInChunks / 2) + settings.ViewDistance; x++) {
-            for (int z = (VoxelData.WorldSizeInChunks / 2) - settings.ViewDistance; z < (VoxelData.WorldSizeInChunks / 2) + settings.ViewDistance; z++) {
+        for (int x = (VoxelData.WorldSizeInChunks / 2) - settings.viewDistance; x < (VoxelData.WorldSizeInChunks / 2) + settings.viewDistance; x++) {
+            for (int z = (VoxelData.WorldSizeInChunks / 2) - settings.viewDistance; z < (VoxelData.WorldSizeInChunks / 2) + settings.viewDistance; z++) {
 
                 ChunkCoord newChunkCoord = new ChunkCoord(x, z);
                 chunks[x, z] = new Chunk(newChunkCoord, this);
@@ -211,8 +209,8 @@ public class World : MonoBehaviour {
         activeChunks.Clear();
 
         // Loop through all chunks currently within view distance of the player.
-        for (int x = coord.x - settings.ViewDistance; x < coord.x + settings.ViewDistance; x++) {
-            for (int z = coord.z - settings.ViewDistance; z < coord.z + settings.ViewDistance; z++) {
+        for (int x = coord.x - settings.viewDistance; x < coord.x + settings.viewDistance; x++) {
+            for (int z = coord.z - settings.viewDistance; z < coord.z + settings.viewDistance; z++) {
 
                 ChunkCoord thisChunkCoord = new ChunkCoord(x, z);
 
@@ -468,17 +466,14 @@ public class VoxelMod {
 [System.Serializable]
 public class Settings {
     [Header("Game Data")]
-    public string version;
+    public string version = "0.0.1";
 
     [Header("Performance")]
-    public int ViewDistance = 5;
-    public bool enableThreading;
-    public bool enableAnimatedChunks;
+    public int viewDistance = 8;
+    public bool enableThreading = true;
+    public bool enableAnimatedChunks = true;
 
     [Header("Controls")]
     [Range(0.1f, 10f)]
-    public float mouseSensitivity;
-
-    [Header("World Gen")]
-    public int seed;
+    public float mouseSensitivity = 2.0f;
 }

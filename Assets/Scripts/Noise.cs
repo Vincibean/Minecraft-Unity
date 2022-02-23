@@ -6,7 +6,10 @@ public static class Noise  {
 
     public static float Get2DPerlin (Vector2 position, float offset, float scale) {
 
-        return Mathf.PerlinNoise((position.x + 0.1f) / VoxelData.ChunkWidth * scale + offset, (position.y + 0.1f) / VoxelData.ChunkWidth * scale + offset);
+        position.x += (offset + VoxelData.seed + 0.1f);
+        position.y += (offset + VoxelData.seed + 0.1f);
+
+        return Mathf.PerlinNoise(position.x / VoxelData.ChunkWidth * scale, position.y / VoxelData.ChunkWidth * scale);
 
     }
 
@@ -14,9 +17,9 @@ public static class Noise  {
 
         // https://www.youtube.com/watch?v=Aga0TBJkchM Carpilot on YouTube
 
-        float x = (position.x + offset + 0.1f) * scale;
-        float y = (position.y + offset + 0.1f) * scale;
-        float z = (position.z + offset + 0.1f) * scale;
+        float x = (position.x + offset + VoxelData.seed + 0.1f) * scale;
+        float y = (position.y + offset + VoxelData.seed + 0.1f) * scale;
+        float z = (position.z + offset + VoxelData.seed + 0.1f) * scale;
 
         float AB = Mathf.PerlinNoise(x, y);
         float BC = Mathf.PerlinNoise(y, z);
