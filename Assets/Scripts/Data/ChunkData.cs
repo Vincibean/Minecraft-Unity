@@ -18,6 +18,8 @@ public class ChunkData {
         }
     }
 
+    [System.NonSerialized] public Chunk chunk;
+
     [HideInInspector] // Displaying lots of data in the inspector slows it down even more so hide this one.
     public VoxelState[,,] map = new VoxelState[VoxelData.ChunkWidth, VoxelData.ChunkHeight, VoxelData.ChunkWidth];
 
@@ -34,11 +36,64 @@ public class ChunkData {
 		for (int y = 0; y < VoxelData.ChunkHeight; y++) {
 			for (int x = 0; x < VoxelData.ChunkWidth; x++) {
 				for (int z = 0; z < VoxelData.ChunkWidth; z++) {
-                    map[x, y, z] = new VoxelState(World.Instance.GetVoxel(new Vector3(x + position.x, y, z + position.y)));
+                    Vector3 voxelGlobalPos = new Vector3(x + position.x, y, z + position.y);
+                    map[x, y, z] = new VoxelState(World.Instance.GetVoxel(voxelGlobalPos), this, new Vector3Int(x, y, z));
+                    // Loop through each of the voxels neighbours and attempt to ste them.
+                    for (int p = 0; p < 6; p++) {
+                        Vector3Int neighborV3 = new Vector3Int(x, y, z) + VoxelData.faceChecks[p];
+                        if (IsVoxelInChunk(neighborV3)) { // If in chunk, get voxel straight from the map
+                            map[x, y, z].neighbours[p] = VoxelFromV3Int(neighborV3);
+                        } else { // else see if we can get the neighbour from WorldData
+                            map[x, y, z].neighbours[p] = World.Instance.worldData.GetVoxel(voxelGlobalPos + VoxelData.faceChecks[p]);
+                        }
+                    }
 				}
 			}
 		}
+        Lighting.RecalculateNaturalLight(this);
         World.Instance.worldData.AddToModifiedChunkList(this);
 	}
+
+    public bool IsVoxelInChunk(int x, int y, int z) {
+        if (x < 0 || x > VoxelData.ChunkWidth - 1 || y < 0 || y > VoxelData.ChunkHeight - 1 || z < 0 || z > VoxelData.ChunkWidth - 1)
+            return false;
+        else
+            return true;
+    }
+
+    public void ModifyVoxel(Vector3Int pos, byte _id) {
+        // If we've somehow tried to change a block for the same block, just return
+        if (map[pos.x, pos.y, pos.z].id == _id) {
+            return;
+        }
+        VoxelState voxel = map[pos.x, pos.y, pos.z];
+        BlockType newVoxel = World.Instance.blocktypes[_id];
+        // Cache the old opacity value
+        byte oldOpacity = voxel.properties.opacity;
+        // Set the voxel to new ID
+        voxel.id = _id;
+        // If the opacity values of the voxel have changed and the voxel above is in direct sunlight
+        // (or is above the world) recast light from that voxel downwards.
+        if (voxel.properties.opacity != oldOpacity &&
+            (pos.y == VoxelData.ChunkHeight - 1 || map[pos.x, pos.y + 1, pos.z].light == 15)) {
+                Lighting.CastNaturalLight(this, pos.x, pos.z, pos.y + 1);
+            }
+        // Add this ChunkData to the modified chunk list
+        World.Instance.worldData.AddToModifiedChunkList(this);
+
+        // if we have a chunk attached, add that for updating
+        if (chunk != null)
+            World.Instance.AddChunkToUpdate(chunk);
+
+
+    }
+
+    public bool IsVoxelInChunk(Vector3Int pos) {
+        return IsVoxelInChunk(pos.x, pos.y, pos.z);
+    }
+
+    public VoxelState VoxelFromV3Int(Vector3Int pos) {
+        return map[pos.x, pos.y, pos.z];
+    }
 
 }
