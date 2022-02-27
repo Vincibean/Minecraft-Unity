@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   biomeName: Desert
   offset: 6545
-  scale: 0.05
+  scale: 0.058
   terrainHeight: 10
   terrainScale: 0.05
   surfaceBlock: 4
@@ -48,4 +48,4 @@ MonoBehaviour:
     maxHeight: 60
     scale: 0.1
     threshold: 0.55
-    noiseOffset: 500
+    noiseOffset: 43534

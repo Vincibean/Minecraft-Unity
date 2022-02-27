@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc6c34df25431134cb3812294acc3764, type: 3}
+  m_Script: {fileID: 11500000, guid: e37c0a1909c19a34f8215ed0016a4f26, type: 3}
   m_Name: Standard Block
   m_EditorClassIdentifier: 
   blockName: Standard Block

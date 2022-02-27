@@ -9,7 +9,7 @@ public static class Noise  {
         position.x += (offset + VoxelData.seed + 0.1f);
         position.y += (offset + VoxelData.seed + 0.1f);
 
-        return Mathf.PerlinNoise(position.x / VoxelData.ChunkWidth * scale, position.y / VoxelData.ChunkWidth * scale);
+        return Mathf.PerlinNoise(position.x/ VoxelData.ChunkWidth * scale, position.y / VoxelData.ChunkWidth * scale);
 
     }
 

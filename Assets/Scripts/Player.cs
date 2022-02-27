@@ -35,31 +35,43 @@ public class Player : MonoBehaviour {
     public Toolbar toolbar;
 
     private void Start() {
+
         cam = GameObject.Find("Main Camera").transform;
         world = GameObject.Find("World").GetComponent<World>();
 
         world.inUI = false;
+
     }
 
     private void FixedUpdate() {
+        
         if (!world.inUI) {
+
             CalculateVelocity();
             if (jumpRequest)
                 Jump();
+
             transform.Rotate(Vector3.up * mouseHorizontal * world.settings.mouseSensitivity);
             cam.Rotate(Vector3.right * -mouseVertical * world.settings.mouseSensitivity);
             transform.Translate(velocity, Space.World);
+
         }
+
     }
 
     private void Update() {
+
         if (Input.GetKeyDown(KeyCode.I)) {
+
             world.inUI = !world.inUI;
+
         }
+
         if (!world.inUI) {
             GetPlayerInputs();
             placeCursorBlocks();
         }
+
     }
 
     void Jump () {
@@ -99,9 +111,9 @@ public class Player : MonoBehaviour {
     }
 
     private void GetPlayerInputs () {
-        if (Input.GetKeyDown(KeyCode.Escape)) {
+
+        if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
-        }
 
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
@@ -129,7 +141,6 @@ public class Player : MonoBehaviour {
                     toolbar.slots[toolbar.slotIndex].itemSlot.Take(1);
                 }
             }
-
         }
 
     }

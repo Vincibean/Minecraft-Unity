@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BiomeAttributes", menuName = "MinecraftTutorial/Biome Attribute")]
 public class BiomeAttributes : ScriptableObject {
 
-    [Header("General")]
+    [Header("Major Flora")]
     public string biomeName;
     public int offset;
     public float scale;
@@ -28,6 +28,7 @@ public class BiomeAttributes : ScriptableObject {
 
     public int maxHeight = 12;
     public int minHeight = 5;
+
 
     public Lode[] lodes;
 

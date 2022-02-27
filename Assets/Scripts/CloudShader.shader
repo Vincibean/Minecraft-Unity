@@ -1,4 +1,4 @@
-Shader "Minecraft/CloudShader" {
+﻿Shader "Minecraft/CloudShader" {
 	Properties{
 		_Color("Main Color", Color) = (1,1,1,1)
 	}
@@ -13,13 +13,16 @@ Shader "Minecraft/CloudShader" {
 		Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass {
-			Stencil {
-                Ref 1
-                Comp Greater
-                Pass IncrSat
-            }
 
-            Color[_Color]
+			Stencil {
+			
+				Ref 1
+				Comp Greater
+				Pass IncrSat
+
+			}
+
+			Color[_Color]
 		}
 	}
 }

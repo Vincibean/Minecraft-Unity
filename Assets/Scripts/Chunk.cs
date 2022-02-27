@@ -20,13 +20,15 @@ public class Chunk {
     List<Vector3> normals = new List<Vector3>();
 
     public Vector3 position;
-
+   
     private bool _isActive;
 
-    private ChunkData chunkData;
+    ChunkData chunkData;
 
     public Chunk (ChunkCoord _coord) {
+
         coord = _coord;
+
         chunkObject = new GameObject();
         meshFilter = chunkObject.AddComponent<MeshFilter>();
         meshRenderer = chunkObject.AddComponent<MeshRenderer>();
@@ -39,17 +41,19 @@ public class Chunk {
         chunkObject.transform.position = new Vector3(coord.x * VoxelData.ChunkWidth, 0f, coord.z * VoxelData.ChunkWidth);
         chunkObject.name = "Chunk " + coord.x + ", " + coord.z;
         position = chunkObject.transform.position;
+
         chunkData = World.Instance.worldData.RequestChunk(new Vector2Int((int)position.x, (int)position.z), true);
         chunkData.chunk = this;
-        
+
         World.Instance.AddChunkToUpdate(this);
 
-        if (World.Instance.settings.enableAnimatedChunks) {
+        if (World.Instance.settings.enableAnimatedChunks)
             chunkObject.AddComponent<ChunkLoadAnimation>();
-        }
+        
     }
 
 	public void UpdateChunk () {
+
         ClearMeshData();
 
 		for (int y = 0; y < VoxelData.ChunkHeight; y++) {
@@ -62,7 +66,10 @@ public class Chunk {
 				}
 			}
 		}
+
         World.Instance.chunksToDraw.Enqueue(this);
+
+
 	}
 
     void ClearMeshData () {
@@ -81,14 +88,17 @@ public class Chunk {
 
         get { return _isActive; }
         set {
+
             _isActive = value;
             if (chunkObject != null)
                 chunkObject.SetActive(value);
+
         }
 
     }
 
     public void EditVoxel (Vector3 pos, byte newID) {
+
         int xCheck = Mathf.FloorToInt(pos.x);
         int yCheck = Mathf.FloorToInt(pos.y);
         int zCheck = Mathf.FloorToInt(pos.z);
@@ -99,6 +109,8 @@ public class Chunk {
         chunkData.ModifyVoxel(new Vector3Int(xCheck, yCheck, zCheck), newID);
 
         UpdateSurroundingVoxels(xCheck, yCheck, zCheck);
+
+
     }
 
     void UpdateSurroundingVoxels (int x, int y, int z) {
@@ -118,7 +130,7 @@ public class Chunk {
         }
 
     }
-
+    
     public VoxelState GetVoxelFromGlobalVector3 (Vector3 pos) {
 
         int xCheck = Mathf.FloorToInt(pos.x);
@@ -132,35 +144,50 @@ public class Chunk {
 
     }
 
-	void UpdateMeshData (Vector3 pos) {
-		int x = Mathf.FloorToInt (pos.x);
+    void UpdateMeshData (Vector3 pos) {
+
+        int x = Mathf.FloorToInt (pos.x);
 		int y = Mathf.FloorToInt (pos.y);
 		int z = Mathf.FloorToInt (pos.z);
 
         VoxelState voxel = chunkData.map[x, y, z];
 
 		for (int p = 0; p < 6; p++) {
-            VoxelState neighbor = chunkData.map[x, y, z].neighbours[p];
-			if (neighbor != null && neighbor.properties.renderNeighborFaces) {
-                float lightLevel = neighbor.lightAsFloat;
+
+            VoxelState neighbour = chunkData.map[x, y, z].neighbours[p];
+            
+            if (neighbour != null && neighbour.properties.renderNeighborFaces) {
+
+                float lightLevel = neighbour.lightAsFloat;
                 int faceVertCount = 0;
+
                 for (int i = 0; i < voxel.properties.meshData.faces[p].vertData.Length; i++) {
+
                     vertices.Add(pos + voxel.properties.meshData.faces[p].vertData[i].position);
                     normals.Add(voxel.properties.meshData.faces[p].normal);
                     colors.Add(new Color(0, 0, 0, lightLevel));
                     AddTexture(voxel.properties.GetTextureID(p), voxel.properties.meshData.faces[p].vertData[i].uv);
                     faceVertCount++;
+
                 }
+
                 if (!voxel.properties.renderNeighborFaces) {
+
                     for (int i = 0; i < voxel.properties.meshData.faces[p].triangles.Length; i++)
                         triangles.Add(vertexIndex + voxel.properties.meshData.faces[p].triangles[i]);
+
                 } else {
+
                     for (int i = 0; i < voxel.properties.meshData.faces[p].triangles.Length; i++)
                         transparentTriangles.Add(vertexIndex + voxel.properties.meshData.faces[p].triangles[i]);
+
                 }
+
                 vertexIndex += faceVertCount;
+
             }
-		}
+
+        }
 
 	}
 
@@ -172,25 +199,30 @@ public class Chunk {
         mesh.subMeshCount = 2;
         mesh.SetTriangles(triangles.ToArray(), 0);
         mesh.SetTriangles(transparentTriangles.ToArray(), 1);
-        // mesh.triangles = triangles.ToArray();
+        //mesh.triangles = triangles.ToArray();
         mesh.uv = uvs.ToArray ();
         mesh.colors = colors.ToArray();
-		mesh.normals = normals.ToArray();
+        mesh.normals = normals.ToArray();
 
 		meshFilter.mesh = mesh;
 
 	}
 
     void AddTexture (int textureID, Vector2 uv) {
+
         float y = textureID / VoxelData.TextureAtlasSizeInBlocks;
         float x = textureID - (y * VoxelData.TextureAtlasSizeInBlocks);
+
         x *= VoxelData.NormalizedBlockTextureSize;
         y *= VoxelData.NormalizedBlockTextureSize;
+
         y = 1f - y - VoxelData.NormalizedBlockTextureSize;
+
         x += VoxelData.NormalizedBlockTextureSize * uv.x;
         y += VoxelData.NormalizedBlockTextureSize * uv.y;
 
         uvs.Add(new Vector2(x, y));
+
     }
 
 }
