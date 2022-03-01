@@ -310,6 +310,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 0
     icon: {fileID: 0}
+    isActive: 0
     backFaceTexture: 0
     frontFaceTexture: 0
     topFaceTexture: 0
@@ -323,6 +324,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 15
     icon: {fileID: 21300010, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 9
     frontFaceTexture: 9
     topFaceTexture: 9
@@ -336,6 +338,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 15
     icon: {fileID: 21300000, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 0
     frontFaceTexture: 0
     topFaceTexture: 0
@@ -349,6 +352,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 15
     icon: {fileID: 21300002, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 1
     backFaceTexture: 2
     frontFaceTexture: 2
     topFaceTexture: 7
@@ -362,6 +366,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 15
     icon: {fileID: 21300012, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 10
     frontFaceTexture: 10
     topFaceTexture: 10
@@ -375,6 +380,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 15
     icon: {fileID: 21300004, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 1
     frontFaceTexture: 1
     topFaceTexture: 1
@@ -388,6 +394,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 15
     icon: {fileID: 21300006, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 5
     frontFaceTexture: 5
     topFaceTexture: 6
@@ -401,6 +408,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 15
     icon: {fileID: 21300014, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 4
     frontFaceTexture: 4
     topFaceTexture: 4
@@ -414,6 +422,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 15
     icon: {fileID: 21300020, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 13
     frontFaceTexture: 12
     topFaceTexture: 15
@@ -427,6 +436,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 15
     icon: {fileID: 21300016, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 8
     frontFaceTexture: 8
     topFaceTexture: 8
@@ -440,6 +450,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 0
     icon: {fileID: 21300018, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 3
     frontFaceTexture: 3
     topFaceTexture: 3
@@ -453,6 +464,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 5
     icon: {fileID: 21300018, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 16
     frontFaceTexture: 16
     topFaceTexture: 16
@@ -466,6 +478,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 15
     icon: {fileID: 21300018, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 18
     frontFaceTexture: 18
     topFaceTexture: 19
@@ -479,6 +492,7 @@ MonoBehaviour:
     isWater: 0
     opacity: 15
     icon: {fileID: 21300018, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 18
     frontFaceTexture: 18
     topFaceTexture: 17
@@ -492,6 +506,7 @@ MonoBehaviour:
     isWater: 1
     opacity: 7
     icon: {fileID: 21300018, guid: 2822219ca9b3cfc40aec85f96a4e33cd, type: 3}
+    isActive: 0
     backFaceTexture: 0
     frontFaceTexture: 0
     topFaceTexture: 0

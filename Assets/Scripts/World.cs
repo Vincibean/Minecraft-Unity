@@ -107,6 +107,8 @@ public class World : MonoBehaviour {
             ChunkUpdateThread.Start();
         }
 
+        StartCoroutine(Tick());
+
     }
 
     public void SetGlobalLightValue () {
@@ -114,6 +116,17 @@ public class World : MonoBehaviour {
         Shader.SetGlobalFloat("GlobalLightLevel", globalLightLevel);
         Camera.main.backgroundColor = Color.Lerp(night, day, globalLightLevel);
 
+    }
+
+    IEnumerator Tick() {
+        while (true) {
+
+            foreach (ChunkCoord c in activeChunks) {
+                chunks[c.x, c.z].TickUpdate();
+            }
+            yield return new WaitForSeconds(VoxelData.tickLength);
+
+        }
     }
 
     private void Update() {
@@ -477,6 +490,7 @@ public class BlockType {
     public bool isWater;
     public byte opacity;
     public Sprite icon;
+    public bool isActive;
 
     [Header("Texture Values")]
     public int backFaceTexture;
