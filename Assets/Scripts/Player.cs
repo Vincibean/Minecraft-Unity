@@ -19,6 +19,8 @@ public class Player : MonoBehaviour {
     public float playerWidth = 0.15f;
     public float boundsTolerance = 0.1f;
 
+    public int orientation;
+
     private float horizontal;
     private float vertical;
     private float mouseHorizontal;
@@ -71,6 +73,17 @@ public class Player : MonoBehaviour {
             GetPlayerInputs();
             placeCursorBlocks();
         }
+
+        Vector3 XZDirection = transform.forward;
+        XZDirection.y = 0;
+        if (Vector3.Angle(XZDirection, Vector3.forward) <= 45)
+            orientation = 0; // Player is facing forward
+        else if (Vector3.Angle(XZDirection, Vector3.right) <= 45)
+            orientation = 5;
+        else if (Vector3.Angle(XZDirection, Vector3.back) <= 45)
+            orientation = 1;
+        else
+            orientation = 4;
 
     }
 

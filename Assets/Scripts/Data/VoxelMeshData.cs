@@ -23,6 +23,13 @@ public class VertData {
 
     }
 
+    public Vector3 GetRotatedPosition (Vector3 angles) {
+        Vector3 center = new Vector3(0.5f, 0.5f, 0.5f); // The center of the block that we are pivoting around.
+        Vector3 direction = position - center; // Get the direction from the center to the current vertice
+        direction = Quaternion.Euler(angles) * direction; // Rotate the direction by angles specified in the function parameters 
+        return direction + center; // Add the modified direction to the center to get our new position and return.
+    }
+
 }
 
 [System.Serializable]
@@ -32,8 +39,11 @@ public class FaceMeshData {
     // for each face and use that for each vert in the face.
 
     public string direction; // Purely to make things easier to read in the inspector.
-    public Vector3 normal;
     public VertData[] vertData;
     public int[] triangles;
+
+    public VertData GetVertData(int index) {
+        return vertData[index];
+    }
 
 }

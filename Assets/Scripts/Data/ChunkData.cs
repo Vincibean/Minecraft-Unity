@@ -59,7 +59,7 @@ public class ChunkData {
 
 	}
 
-    public void ModifyVoxel (Vector3Int pos, byte _id) {
+    public void ModifyVoxel (Vector3Int pos, byte _id, int direction) {
 
         // If we've somehow tried to change a block for the same block, just return.
         if (map[pos.x, pos.y, pos.z].id == _id)
@@ -74,6 +74,7 @@ public class ChunkData {
 
         // Set voxel to new ID.
         voxel.id = _id;
+        voxel.orientation = direction;
 
         // If the opacity values of the voxel have changed and the voxel above is in direct sunlight
         // (or is above the world) recast light from that voxel downwards.

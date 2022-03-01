@@ -14,7 +14,8 @@ public class Chunk {
 	List<Vector3> vertices = new List<Vector3> ();
 	List<int> triangles = new List<int> ();
     List<int> transparentTriangles = new List<int>();
-    Material[] materials = new Material[2];
+	List<int> waterTriangles = new List<int> ();
+    Material[] materials = new Material[3];
 	List<Vector2> uvs = new List<Vector2> ();
     List<Color> colors = new List<Color>();
     List<Vector3> normals = new List<Vector3>();
@@ -35,6 +36,7 @@ public class Chunk {
 
         materials[0] = World.Instance.material;
         materials[1] = World.Instance.transparentMaterial;
+        materials[2] = World.Instance.waterMaterial;
         meshRenderer.materials = materials;
 
         chunkObject.transform.SetParent(World.Instance.transform);
@@ -106,7 +108,7 @@ public class Chunk {
         xCheck -= Mathf.FloorToInt(chunkObject.transform.position.x);
         zCheck -= Mathf.FloorToInt(chunkObject.transform.position.z);
 
-        chunkData.ModifyVoxel(new Vector3Int(xCheck, yCheck, zCheck), newID);
+        chunkData.ModifyVoxel(new Vector3Int(xCheck, yCheck, zCheck), newID, World.Instance._player.orientation);
 
         UpdateSurroundingVoxels(xCheck, yCheck, zCheck);
 
@@ -152,23 +154,61 @@ public class Chunk {
 
         VoxelState voxel = chunkData.map[x, y, z];
 
+        float rot = 0f;
+        switch (voxel.orientation) {
+            case 0:
+                rot = 180f;
+                break;
+            case 5:
+                rot = 270f;
+                break;
+            case 1:
+                rot = 0f;
+                break;
+            default:
+                rot = 90f;
+                break;
+        }
+
 		for (int p = 0; p < 6; p++) {
 
-            VoxelState neighbour = chunkData.map[x, y, z].neighbours[p];
+            int translatedP = p;
+            if (voxel.orientation != 1) {
+                if (voxel.orientation == 0) {
+                    if (p == 0) translatedP = 1;
+                    else if (p == 1) translatedP = 0;
+                    else if (p == 4) translatedP = 5;
+                    else if (p == 5) translatedP = 4;
+                } else if (voxel.orientation == 5) {
+                    if (p == 0) translatedP = 5;
+                    else if (p == 1) translatedP = 4;
+                    else if (p == 4) translatedP = 0;
+                    else if (p == 5) translatedP = 1;
+                } else if (voxel.orientation == 4) {
+                    if (p == 0) translatedP = 4;
+                    else if (p == 1) translatedP = 5;
+                    else if (p == 4) translatedP = 1;
+                    else if (p == 5) translatedP = 0;
+                }
+            }
+
+            VoxelState neighbour = chunkData.map[x, y, z].neighbours[translatedP];
             
-            if (neighbour != null && neighbour.properties.renderNeighborFaces) {
+            if (neighbour != null && neighbour.properties.renderNeighborFaces && !(voxel.properties.isWater && chunkData.map[x, y + 1, z].properties.isWater)) {
 
                 float lightLevel = neighbour.lightAsFloat;
                 int faceVertCount = 0;
 
                 for (int i = 0; i < voxel.properties.meshData.faces[p].vertData.Length; i++) {
-
-                    vertices.Add(pos + voxel.properties.meshData.faces[p].vertData[i].position);
-                    normals.Add(voxel.properties.meshData.faces[p].normal);
+                    VertData vertData = voxel.properties.meshData.faces[p].GetVertData(i);
+                    vertices.Add(pos + vertData.GetRotatedPosition(new Vector3(0, rot, 0)));
+                    normals.Add(VoxelData.faceChecks[p]);
                     colors.Add(new Color(0, 0, 0, lightLevel));
-                    AddTexture(voxel.properties.GetTextureID(p), voxel.properties.meshData.faces[p].vertData[i].uv);
+                    if (voxel.properties.isWater) 
+                        uvs.Add(voxel.properties.meshData.faces[p].vertData[i].uv);
+                    else
+                        AddTexture(voxel.properties.GetTextureID(p), vertData.uv);
                     faceVertCount++;
-
                 }
 
                 if (!voxel.properties.renderNeighborFaces) {
@@ -178,8 +218,13 @@ public class Chunk {
 
                 } else {
 
-                    for (int i = 0; i < voxel.properties.meshData.faces[p].triangles.Length; i++)
-                        transparentTriangles.Add(vertexIndex + voxel.properties.meshData.faces[p].triangles[i]);
+                    if (voxel.properties.isWater) {
+                        for (int i = 0; i < voxel.properties.meshData.faces[p].triangles.Length; i++)
+                            waterTriangles.Add(vertexIndex + voxel.properties.meshData.faces[p].triangles[i]);
+                    } else {
+                        for (int i = 0; i < voxel.properties.meshData.faces[p].triangles.Length; i++)
+                            transparentTriangles.Add(vertexIndex + voxel.properties.meshData.faces[p].triangles[i]);
+                    }
 
                 }
 
@@ -196,9 +241,10 @@ public class Chunk {
 		Mesh mesh = new Mesh ();
 		mesh.vertices = vertices.ToArray ();
 
-        mesh.subMeshCount = 2;
+        mesh.subMeshCount = 3;
         mesh.SetTriangles(triangles.ToArray(), 0);
         mesh.SetTriangles(transparentTriangles.ToArray(), 1);
+        mesh.SetTriangles(waterTriangles.ToArray(), 2);
         //mesh.triangles = triangles.ToArray();
         mesh.uv = uvs.ToArray ();
         mesh.colors = colors.ToArray();
