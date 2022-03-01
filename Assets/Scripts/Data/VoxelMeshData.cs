@@ -24,10 +24,10 @@ public class VertData {
     }
 
     public Vector3 GetRotatedPosition (Vector3 angles) {
-        Vector3 center = new Vector3(0.5f, 0.5f, 0.5f); // The center of the block that we are pivoting around.
-        Vector3 direction = position - center; // Get the direction from the center to the current vertice
-        direction = Quaternion.Euler(angles) * direction; // Rotate the direction by angles specified in the function parameters 
-        return direction + center; // Add the modified direction to the center to get our new position and return.
+        Vector3 centre = new Vector3(0.5f, 0.5f, 0.5f); // The centre of the block that we are pivoting around.
+        Vector3 direction = position - centre; // Get the direction from the centre to the current vertice.
+        direction = Quaternion.Euler(angles) * direction; // Rotate the direction by angles specified in the function parameters.
+        return direction + centre; // Add the modified direction to the center to get our new position and return.
     }
 
 }

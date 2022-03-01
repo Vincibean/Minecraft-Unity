@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e37c0a1909c19a34f8215ed0016a4f26, type: 3}
   m_Name: Water Block
   m_EditorClassIdentifier: 
-  blockName: Standard Block
+  blockName: Water Block
   faces:
   - direction: Back
     vertData: []
@@ -28,10 +28,6 @@ MonoBehaviour:
       uv: {x: 0, y: 1}
     - position: {x: 1, y: 0.875, z: 1}
       uv: {x: 1, y: 1}
-    - position: {x: 1, y: 0.875, z: 0}
-      uv: {x: 1, y: 0}
-    - position: {x: 1, y: 0.875, z: 0}
-      uv: {x: 1, y: 0}
     - position: {x: 1, y: 0.875, z: 0}
       uv: {x: 1, y: 0}
     triangles: 000000000100000003000000030000000100000002000000

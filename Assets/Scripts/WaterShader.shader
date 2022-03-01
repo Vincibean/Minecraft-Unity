@@ -2,7 +2,7 @@
 
 	Properties {
 		_MainTex ("First Texture", 2D) = "white" {}
-		_SecondaryTex ("Second Texture", 2D) = "white" {}
+		_SecondaryTex("Second Texture", 2D) = "white" {}
 	}
 
 	SubShader {
@@ -57,13 +57,13 @@
 				}
 
 				fixed4 fragFunction (v2f i) : SV_Target {
-
-					i.uv.x += (_SinTime.x * 0.5);
 				
+					i.uv.x += (_SinTime.x * 0.5);
+
 					fixed4 tex1 = tex2D (_MainTex, i.uv);
-					fixed4 tex2 = tex2D (_SecondaryTex, i.uv);
-					
-					fixed4 col = lerp (tex1, tex2, 0.5 + (_SinTime.w * 0.5));
+					fixed4 tex2 = tex2D(_SecondaryTex, i.uv);
+
+					fixed4 col = lerp(tex1, tex2, 0.5 + (_SinTime.w * 0.5));
 
 					float shade = (maxGlobalLightLevel - minGlobalLightLevel) * GlobalLightLevel + minGlobalLightLevel;
 					shade *= i.color.a;

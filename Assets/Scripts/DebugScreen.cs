@@ -51,7 +51,7 @@ public class DebugScreen : MonoBehaviour {
         }
 
         debugText += "\n";
-        debugText += "Direction facing: " + direction;
+        debugText += "Direction Facing: " + direction;
 
         text.text = debugText;
 

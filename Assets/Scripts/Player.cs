@@ -77,7 +77,7 @@ public class Player : MonoBehaviour {
         Vector3 XZDirection = transform.forward;
         XZDirection.y = 0;
         if (Vector3.Angle(XZDirection, Vector3.forward) <= 45)
-            orientation = 0; // Player is facing forward
+            orientation = 0; // Player is facing forwards.
         else if (Vector3.Angle(XZDirection, Vector3.right) <= 45)
             orientation = 5;
         else if (Vector3.Angle(XZDirection, Vector3.back) <= 45)
