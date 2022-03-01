@@ -119,14 +119,18 @@ public class World : MonoBehaviour {
     }
 
     IEnumerator Tick() {
+
         while (true) {
 
             foreach (ChunkCoord c in activeChunks) {
                 chunks[c.x, c.z].TickUpdate();
             }
+
+
             yield return new WaitForSeconds(VoxelData.tickLength);
 
         }
+
     }
 
     private void Update() {
@@ -423,6 +427,7 @@ public class World : MonoBehaviour {
                 return 14;
             else
                 return 0;
+
         } else
             voxelValue = 2;
 

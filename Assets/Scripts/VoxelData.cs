@@ -20,7 +20,7 @@ public static class VoxelData {
 
     }
 
-	public static float tickLength = 1f;
+    public static float tickLength = 1f;
 
     public static int seed;
 

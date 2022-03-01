@@ -75,8 +75,9 @@ public class Chunk {
             if (!BlockBehaviour.Active(activeVoxels[i]))
                 RemoveActiveVoxel(activeVoxels[i]);
             else
-                BlockBehaviour.Behave(activeVoxels[i]);
+            BlockBehaviour.Behave(activeVoxels[i]);
         }
+
 
     }
 
@@ -101,8 +102,10 @@ public class Chunk {
 	}
 
     public void AddActiveVoxel (VoxelState voxel) {
-        if (!activeVoxels.Contains(voxel)) // Make sure voxel isn't already in the list.
+
+        if (!activeVoxels.Contains(voxel)) // Make sure voxel isn't already in list.
             activeVoxels.Add(voxel);
+
     }
 
     public void RemoveActiveVoxel(VoxelState voxel) {
@@ -154,7 +157,6 @@ public class Chunk {
         chunkData.ModifyVoxel(new Vector3Int(xCheck, yCheck, zCheck), newID, World.Instance._player.orientation);
 
         UpdateSurroundingVoxels(xCheck, yCheck, zCheck);
-
 
     }
 
